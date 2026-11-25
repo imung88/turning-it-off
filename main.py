@@ -14,17 +14,15 @@ LINE = (
 def main() -> None:
     import os
 
-    # /output must be readable by the user that collects it, not just us.
+    # The grader provides a writable output dir and runs us as an
+    # unprivileged user on a read-only fs, so just write the one file.
+    # umask 022 makes it 0644, readable by the collector.
     os.umask(0o022)
-    out_dir = "/output"
-    os.makedirs(out_dir, exist_ok=True)
-    os.chmod(out_dir, 0o755)
-
+    out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
     path = os.path.join(out_dir, "entry.txt")
     text = LINE.strip() + "\n"
     with open(path, "w", encoding="utf-8") as f:
         f.write(text)
-    os.chmod(path, 0o644)
 
 
 if __name__ == "__main__":
